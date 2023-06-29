@@ -14,11 +14,21 @@ import Button from '../UI/Button/Button';
   }
   return {val:'',valid: false}
  }
+ const reducer2 = (state, action) => {
+  if (action.type === 'setPsw') {
+    return { val: action.val, valid: action.val.trim().length > 6 };
+  }
+  if (action.type === 'setValid') {
+    return { val: state.val, valid: state.val.trim().length > 6 };
+  }
+  return { val: '', valid: false };
+};
+
 const Login = (props) => {
  // const [enteredEmail, setEnteredEmail] = useState('');
 //  const [emailIsValid, setEmailIsValid] = useState();
-  const [enteredPassword, setEnteredPassword] = useState('');
-  const [passwordIsValid, setPasswordIsValid] = useState();
+ // const [enteredPassword, setEnteredPassword] = useState('');
+// const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
   useEffect(() => {
@@ -47,18 +57,12 @@ const Login = (props) => {
   const [EmailState, dispatchEmail] = useReducer(reducer1,{val:'',valid: undefined});
   const emailChangeHandler = (event) => {
     dispatchEmail({type:'setEmail',val:event.target.value});
-
-    setFormIsValid(
-      event.target.value.includes('@') && enteredPassword.trim().length > 6
-    );
+    setFormIsValid(event.target.value && pswState.valid);
   };
 const [pswState,dispatchPsw] = useReducer(reducer2,{val:'',valid:undefined})
   const passwordChangeHandler = (event) => {
-    setEnteredPassword(event.target.value);
-
-    setFormIsValid(
-      EmailState.valid && event.target.value.trim().length > 6
-    );
+    dispatchPsw({type:'setPsw',val:event.target.value} );
+    setFormIsValid(event.target.value && EmailState.valid);
   };
 
   const validateEmailHandler = () => {
@@ -66,12 +70,12 @@ const [pswState,dispatchPsw] = useReducer(reducer2,{val:'',valid:undefined})
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+   dispatchPsw({type:'setValid'});
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(EmailState, enteredPassword);
+    props.onLogin(EmailState, pswState);
   };
 
   return (
@@ -93,14 +97,14 @@ const [pswState,dispatchPsw] = useReducer(reducer2,{val:'',valid:undefined})
         </div>
         <div
           className={`${classes.control} ${
-            passwordIsValid === false ? classes.invalid : ''
+            pswState.valid === false ? classes.invalid : ''
           }`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={pswState.val}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
@@ -108,4 +112,11 @@ const [pswState,dispatchPsw] = useReducer(reducer2,{val:'',valid:undefined})
         <div className={classes.actions}>
           <Button type="submit" className={classes.btn} disabled={!formIsValid}>
             Login
-          </Bu
+          </Button>
+        </div>
+      </form>
+    </Card>
+  );
+};
+
+export default Login;
