@@ -30,39 +30,35 @@ const Login = (props) => {
  // const [enteredPassword, setEnteredPassword] = useState('');
 // const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
-
-  useEffect(() => {
-    console.log('EFFECT RUNNING');
-
-    return () => {
-      console.log('EFFECT CLEANUP');
-    };
-  }, []);
-
-  // useEffect(() => {
-  //   const identifier = setTimeout(() => {
-  //     console.log('Checking form validity!');
-  //     setFormIsValid(
-  //       enteredEmail.includes('@') && enteredPassword.trim().length > 6
-  //     );
-  //   }, 500);
-
-  //   return () => {
-  //     console.log('CLEANUP');
-  //     clearTimeout(identifier);
-  //   };
-  // }, [enteredEmail, enteredPassword]);
-
-
   const [EmailState, dispatchEmail] = useReducer(reducer1,{val:'',valid: undefined});
+  const [pswState,dispatchPsw] = useReducer(reducer2,{val:'',valid:undefined})
+
+ const {valid : x1} = EmailState;
+ const {valid : x2} = pswState;
+   useEffect(() => {
+    const identifier = setTimeout(() => {
+      console.log('Checking form validity!');
+      setFormIsValid(
+        x1 && x2
+      );
+     }, 500);
+
+     return () => {
+       console.log('CLEANUP');
+       clearTimeout(identifier);
+    };
+   }, [x1, x2]);
+
+
+
   const emailChangeHandler = (event) => {
     dispatchEmail({type:'setEmail',val:event.target.value});
-    setFormIsValid(event.target.value && pswState.valid);
+ //   setFormIsValid(event.target.value && pswState.valid);
   };
-const [pswState,dispatchPsw] = useReducer(reducer2,{val:'',valid:undefined})
+
   const passwordChangeHandler = (event) => {
     dispatchPsw({type:'setPsw',val:event.target.value} );
-    setFormIsValid(event.target.value && EmailState.valid);
+   // setFormIsValid(event.target.value && EmailState.valid);
   };
 
   const validateEmailHandler = () => {
